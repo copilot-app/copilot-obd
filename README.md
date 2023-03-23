@@ -13,9 +13,11 @@ Po dokładnej analizie rozwiązań rynkowych trudno było nam dostrzec okazję d
 # Q&A
 
 **Ile będzie wynosił koszt produktu i czy będzie konkurencyjny?**
+
 Ze względu na nieznajomość jeszcze niezawodności i cen podzespołów ciężko oszacować (duży rozrzut cenowy), ile wyniesie dokładny koszt i jak będzie sie odnosił do cen sklepowych. 
 
 **Co będzie wyróżniało nasze rozwiązanie od innych?**
+
 Dominującym sposobem komunikacji wśród urządzeń odczytujących dane z interfejsu OBD jest Bluetooth. Nasze rozwiązanie zawiera sporadycznie wykorzystywany w tym obszarze sposób transmisji oparty na LoRaWAN. Umożliwi to zdalny dostęp do parametrów oraz statystyk pojazdu. 
 
 # Założenia
