@@ -1,24 +1,24 @@
-# Założenia
+# Assumptions
 
-Celem projektu jest zrealizowanie odczytu danych z interfejsu OBD/OBD2 i umożliwienie zdalnego dostępu do informacji w czasie rzeczywistym.
+The aim of this project is to implement reading data from an OBD/OBD2 interface and enable remote access to real-time information.
 
-# Teoria i praktyka
+# Theory and practice
 
-Złącze diagnostyczne OBD2 wyróźnia dwa typy A i B. Typ pierwszy spotykany jest w samochodach osobowych, z kolei ten drugi znajdziemy w pojazdach o większym gabarycie. Ze względu na to, że standardy ISO zostają przyjęte w różnych momentach czasowych, obecnie jeżdżące samochody po naszych drogach mogą korzystać z ich innych wersji. W zależności od użytego protokołu jak i systemów pomiarowych obecnych w samym pojeździe zmianie ulega również pula informacji które są rozgłaszane przez magistralę CAN.
+The OBD2 diagnostic connector distinguishes two types: Type A, which is commonly found in passenger cars, while Type B can be found in vehicles with medium and heavy duty. Due to the fact that ISO standards have been adopted at different points in time, the cars currently driving on our roads may use different versions of these standards. Depending on the protocol used and the measurement systems present in the vehicle itself, the pool of information broadcasted by the CAN bus also changes.
 
 [OBD2 Explained](https://www.csselectronics.com/pages/obd2-explained-simple-intro)
 
-# Analiza rozwiązań rynkowych
+# Market solutions analysis
 
-Bezprzewodowe adaptery OBD dostępne na rynku wykorzystują szereg sprawdzonych protokołów komunikacyjnych, między innymi Bluetooth, Bluetooth Low Energy, LoRaWAN, WiFi. Większość z nich oferuje szeroką kompatybilność z wieloma modelami samochodów, jak i odczyt informacji z samego systemu OBD w mniej lub bardziej bogatym zakresie, jednak opinie użytkowników sugerują dość dużą zawodność, jeśli chodzi o urządzenia ze średniej i niskiej półki cenowej.
+Wireless OBD adapters available on the market utilize a range of proven communication protocols, including Bluetooth, Bluetooth Low Energy, LoRaWAN, and WiFi. Most of them offer compatibility with many car models and the ability to read information from the OBD system to a greater or lesser extent. However, user reviews suggest relatively high unreliability when it comes to devices from the mid and low price range.
 
-Najtańszym rozwiązaniom rzędu kilkudziesięciu złotych zdarza się ograniczać do pobierania informacji o występujących błędach, a w przypadku urządzeń coraz to wyższej klasy jest uzupełnione o więcej informacji, aż do momentu wyciągnięcia wszystkich możliwych do uzyskania w danym środowisku (gdzie granicę stanowi ilość danych dostępnych w danym modelu samochodu).
+The capabilities of cheapest solutions are limited to retrieving information about existing errors. In the case of higher-end devices, the amount of available information increases, up to the point of reading all possible data in a given environment (where the limit is the amount of data available in a given car model).
 
-Poza samą komunikacją poprzez interfejs, istnieją rozwiązania oferujące zapis pobranych danych i ich prezentację w celach statystycznych (poprzez dedykowaną aplikację na urządzenia mobilne).
+In addition to the communication through the interface itself, there are solutions that offer recording of the collected data and their presentation for statistical purposes (through a dedicated mobile application).
 
-Po dokładnej analizie rozwiązań rynkowych trudno było nam dostrzec okazję do wprowadzenia rewolucji w tym obszarze. Na tej podstawie obierzemy podejście do tego tematu mające na celu dorównanie aspektem technologicznym do poziomu rynkowego starając się o utrzymanie kosztu produktu na jak najniższym poziomie, jednocześnie zachowując wysoki poziom niezawodności. 
+After a thorough analysis of market solutions, we found it difficult to identify an opportunity to introduce a revolution in this area. Based on this, we have adopted an approach to this topic aimed at matching the technological aspects to the market level, while striving to maintain the product cost at the lowest possible level, while maintaining a high level of reliability.
 
-### Przykłady gotowych rozwiązań
+### Avaliabe products
 
 * [SparkFun RTL-10769](https://botland.com.pl/pozostale/1864-modul-diagnostyczny-obd-ii-car-diagnostics-kit-sparkfun-rtl-10769-845156001064.html#)
 * [CANedge2: 2x CAN Bus Data Logger (SD + WiFi)](https://www.csselectronics.com/products/can-bus-data-logger-wifi-canedge2?variant=40254702059708)
@@ -26,46 +26,44 @@ Po dokładnej analizie rozwiązań rynkowych trudno było nam dostrzec okazję d
 * [Interfejs diagnostyczny OBD2 Vgate iCar2 Bluetooth + SDPROG PL](https://smartmoto.pl/product-pol-7060-Interfejs-diagnostyczny-OBD2-Vgate-iCar2-Bluetooth-SDPROG-PL.html?utm_source=ceneo&utm_medium=referral&ceneo_cid=95da3a57-ae86-7c3d-cdb6-c4a0511753c6)
 * [Analiza gotowych rozwiązań w pracy "Extraction and analysis of car driving data via OBD-II"](https://lcsi.umh.es/docs/pfcs/PFC_TFG_Bocanegra_Fernando.pdf)
 
-# Projekt względem rynku
+# Project in relation to market
 
-### Koszt produktu
-Ze względu na nieznajomość jeszcze niezawodności i cen podzespołów ciężko oszacować (duży rozrzut cenowy), ile wyniesie dokładny koszt i jak będzie sie odnosił do cen sklepowych.
+### Cost of product
+Due to the unknown reliability and price range of components, it is difficult to estimate the exact cost and how it will compare to retail prices. However, we will strive to keep the cost as low as possible.
 
-### Inspiracje i kontrastowe rozwiązania
-Dominującym sposobem komunikacji wśród urządzeń odczytujących dane z interfejsu OBD jest Bluetooth. Nasze rozwiązanie z założenia ma zawierać sporadycznie wykorzystywany w tym obszarze sposób transmisji oparty na LoRaWAN. Umożliwi to zdalny dostęp do najistotniejszych parametrów oraz statystyk pojazdu.
+### Inspirations 
+The dominant way of communication among devices that read data from the OBD interface is Bluetooth. Our solution is intended to include a sporadically used transmission method based on LoRaWAN, which is not commonly used in this area. This will enable remote access over a long range to the most important parameters and statistics of the vehicle.
 
-W jednym z realizowanych projektów przez innych założenia celowały w inteligentny samochód, gdzie dostęp do danych był poprzez komendy głosowe. Do odczytywania informacji z OBD posłużyli się ESP32, które daje szerokie opcje rozwoju (Bluetooth, WiFi i inne).
+In one of the projects carried out by others, the objectives were aimed at an intelligent car, where data access was through voice commands. They used ESP32 for reading information from the OBD, which provides a wide range of development options (Bluetooth, WiFi, and others).
 
-Innym z projektów jest amatorski projekt Car Diagnostics With A Raspebrry. Projekt ten również bazuje na schemacie połączeniowym: OBD dongle -> MCU, w tym przypadku Raspebrry Pi. Transmijsa odbywa się za pomocą Bluetooth. Po podłączeniu wtyczki OBD następuje automatyczna detekcja protokołu komunikacyjnego zależnego od marki i/lub modelu samochodu. Odczytywane dane to podstawowe informacje dotyczące pojazdu oraz akutalnie przebywanej trasy. Projekt zawiera integrację z systemem GPS. Umożliwia to nakładka na mikrokontroler, która łączy się z satelitą. Zebrane dane są prezentowane na wyświetlaczu, którego interfejs został zaprogramowany w PyGame. 
+Another project is an amateur project called "Car Diagnostics With A Raspberry". This project also uses the connection scheme: OBD dongle -> MCU, in this case, Raspberry Pi. The transmission is done via Bluetooth. After plugging in the OBD plug, the communication protocol is automatically detected, depending on model of car. The read data includes basic information about the vehicle parameters and the currently traveled route. The project includes integration with the GPS system. Collected data is presented on a display, whose interface was programmed in PyGame.
 
-### Obrana strategia
-Po dokładnej analizie rynku, naturalnym pierwszym krokiem w planie naszego działania będzie analiza gotowego rozwiązania w praktyce. Ma to na celu dokładne zbadanie technicznych aspektów działania samego interfejsu OBD, takich jak rodzaj protokołu komunikacyjnego, rodzaj złącza itp.
-
-Następnym etapem działania będzie prototypowanie i implementacja własnego rozwiązania. Przede wszystkim pomyślny odczyt informacji z systemu OBD, takich jak prędkość, kody błędów, stan paliwa itp. Kolejnym problemem do rozwiązania będzie kwestia komunikacji bezprzewodowej, zrozumienie i zaimplementowanie protokołów transmisji Bluetooth i LoRa.
-
-Końcowo pozostały czas poświęcimy na dopracowanie całości i zadbanie o niezawodność rozwiązania, jak i optymalizację użytych zasobów.
-
-## Podobne projekty
+## Similar projects
 
 1. [Vehicle Monitoring Using OBD2 and Alexa (SmartCar)](https://www.researchgate.net/publication/342732397_Vehicle_Monitoring_Using_OBD2_and_Alexa_SmartCar_Final_Year_Project_Report_for_the_Degree_of_Bachelor_in_Electronics_Engineering)
 2. [Car hacking | How I added features by manipulating can bus](https://tbruno25.medium.com/car-hacking-how-i-added-features-by-manipulating-can-bus-and-how-you-can-too-b391fcea11f1)
 3. [Car Diagnostics With A Raspberry PI](https://www.youtube.com/watch?v=DABytIdutKk)
 
-# Podsumowanie
+### Strategy
+The first step in our action plan will be to analyze the existing solution in practice. This aims to thoroughly examine the technical aspects of the OBD interface operation, such as the type of communication protocol, connector type, and so on.
 
-Pobieranie danych z systemu OBD
+The next stage of the plan will be prototyping and implementing our own solution. This will primarily involve successfully reading information from the OBD system, such as speed, error codes, fuel status, etc. The next problem to be solved will be the issue of wireless communication, understanding and implementing Bluetooth and LoRa transmission protocols.
+
+Finally, the remaining time will be dedicated to refining the whole solution, ensuring its reliability, as well as optimizing the use of resources.
+
+# Summary
+
+Retrieving data from OBD system using already done libraries:
 - [Python](https://github.com/brendan-w/python-OBD)
 - [C++](https://github.com/stanleyhuangyc/ArduinoOBD)
 
-Udostępnianie pełnych danych diagnostycznych i statystycznych przy użyciu standardu Bluetooth.
+Sharing full diagnostic and statistical data using Bluetooth standard.
 
-Końcowym urządzeniem odbiorczym będzie telefon z system operacyjnym Android, na który zostanie napisana dedykowana aplikacja.
+The final receiving device will be an Android-based phone, on which a dedicated application will be written.
 
-Udostępnianie najważniejszych danych takich jak lokalizacja czy kody błędów poprzez system LoRaWAN.
+Sharing the most important data such as location or error codes through the LoRaWAN system.
 
-## Potencjalny hardware
+## Hardware
 
-* ESP32
-* Kable
-* Nadajnik-odbiornik LoRaWAN
-* [Moduł rozwojowy WiFi, LoRa](https://nettigo.pl/products/modul-rozwojowy-heltec-wifi-lora-32-v2-868mhz-esp32-lora-oled-0-96)
+* LoRaWAN transceiver
+* [ESP32 development board](https://nettigo.pl/products/modul-rozwojowy-heltec-wifi-lora-32-v2-868mhz-esp32-lora-oled-0-96)
