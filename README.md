@@ -4,7 +4,7 @@ The aim of this project is to implement reading data from an OBD/OBD2 interface 
 
 # Theory and practice
 
-The OBD2 diagnostic connector distinguishes two types: Type A, which is commonly found in passenger cars, while Type B can be found in vehicles with medium and heavy duty. Due to the fact that ISO standards have been adopted at different points in time, the cars currently driving on our roads may use different versions of these standards. Depending on the protocol used and the measurement systems present in the vehicle itself, the pool of information broadcasted by the CAN bus also changes.
+The OBD2 diagnostic connector distinguishes two types: Type A, which is commonly found in passenger cars, while Type B can be found in medium and heavy-duty vehicles. Due to the fact that ISO standards have been adopted at different points in time, the cars currently driving on our roads may use different versions of these standards. Depending on the protocol used and the measurement systems present in the vehicle itself, the pool of information broadcasted by the CAN bus also changes.
 
 [OBD2 Explained](https://www.csselectronics.com/pages/obd2-explained-simple-intro)
 
@@ -53,13 +53,13 @@ Finally, the remaining time will be dedicated to refining the whole solution, en
 
 # Summary
 
-Retrieving data from OBD system using already done libraries:
+Retrieving data from OBD system with ready-to-use open-source libraries:
 - [Python](https://github.com/brendan-w/python-OBD)
 - [C++](https://github.com/stanleyhuangyc/ArduinoOBD)
 
 Sharing full diagnostic and statistical data using Bluetooth standard.
 
-The final receiving device will be an Android-based phone, on which a dedicated application will be written.
+The final receiving device will be an Android-based phone, on which a dedicated application will be developed.
 
 Sharing the most important data such as location or error codes through the LoRaWAN system.
 
