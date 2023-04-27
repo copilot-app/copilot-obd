@@ -1,0 +1,3 @@
+[submodule "include/TinyGPSPlus-ESP32"]
+	path = include/TinyGPSPlus-ESP32
+	url = https://github.com/Tinyu-Zhao/TinyGPSPlus-ESP32.git
