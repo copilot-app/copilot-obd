@@ -1,3 +1,9 @@
-[submodule "include/TinyGPSPlus-ESP32"]
-	path = include/TinyGPSPlus-ESP32
-	url = https://github.com/Tinyu-Zhao/TinyGPSPlus-ESP32.git
+[submodule "components/arduino-esp32"]
+	path = components/arduino-esp32
+	url = https://github.com/espressif/arduino-esp32.git
+[submodule "components/TinyGPSPlus-ESPIDF"]
+	path = components/TinyGPSPlus-ESPIDF
+	url = https://github.com/andyfinity/TinyGPSPlus-ESPIDF.git
+[submodule "components/libnmea-esp32"]
+	path = components/libnmea-esp32
+	url = https://github.com/igrr/libnmea-esp32.git
