@@ -1,6 +1,3 @@
-[submodule "components/arduino-esp32"]
-	path = components/arduino-esp32
-	url = https://github.com/espressif/arduino-esp32.git
 [submodule "components/TinyGPSPlus-ESPIDF"]
 	path = components/TinyGPSPlus-ESPIDF
 	url = https://github.com/andyfinity/TinyGPSPlus-ESPIDF.git
