@@ -1,3 +1,24 @@
+# Building the project
+
+Before you start, make sure to have [git](https://git-scm.com/) and [Python](https://www.python.org/downloads/) already installed.
+
+Firstly, clone the source of **ESP Development Framework** and setup the build environment using a proper install script for your shell (**Windows PowerShell** in this example).
+```shell
+git clone --recursive https://github.com/espressif/esp-idf.git
+cd esp-idf
+./install.ps1
+```
+Run the export script in every new shell environment before using **ESP-IDF**.
+```shell
+./export.ps1
+```
+Then clone the source of **Copilot** and build it.
+```shell
+git clone --recursive https://github.com/copilot-app/copilot-obd.git
+cd copilot-obd
+idf.py build
+```
+
 # Assumptions
 
 The aim of this project is to implement reading data from an OBD/OBD2 interface and enable remote access to real-time information.
