@@ -22,7 +22,14 @@
         "freertos.h": "c",
         "esp_rom_uart.h": "c",
         "esp_console.h": "c",
-        "uart.h": "c"
+        "uart.h": "c",
+        "locale": "cpp",
+        "thread": "cpp",
+        "xlocale": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp"
     },
     "idf.adapterTargetName": "esp32",
     "idf.flashType": "UART",
@@ -35,7 +42,4 @@
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "sameLine",
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
     "C_Cpp.formatting": "vcFormat",
-    "[cpp]": {
-        "editor.defaultFormatter": "ms-vsliveshare.vsliveshare"
-    },
 }
