@@ -1,6 +1,6 @@
 idf_component_register(
-    SRCS            "copilot-obd.cpp"
-                    "r_gps.cpp"
-                    "r_uart.cpp"
-    INCLUDE_DIRS    "."
+    SRCS            "main.cpp"
+                    "GpsService.cpp"
+                    "UartUtils.cpp"
+    INCLUDE_DIRS    "include"
 )

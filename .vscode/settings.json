@@ -29,7 +29,10 @@
         "xlocmes": "cpp",
         "xlocmon": "cpp",
         "xlocnum": "cpp",
-        "xloctime": "cpp"
+        "xloctime": "cpp",
+        "sdkconfig.h": "c",
+        "gpio.h": "c",
+        "cstring": "cpp"
     },
     "idf.adapterTargetName": "esp32",
     "idf.flashType": "UART",
