@@ -1,6 +1,3 @@
-[submodule "components/libnmea-esp32"]
-	path = components/libnmea-esp32
-	url = https://github.com/igrr/libnmea-esp32.git
 [submodule "components/TinyGPSPlus-ESPIDF"]
 	path = components/TinyGPSPlus-ESPIDF
 	url = https://github.com/copilot-app/TinyGPSPlus-ESPIDF.git

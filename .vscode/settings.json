@@ -1,0 +1,9 @@
+{
+    "idf.portWin": "COM3",
+    "files.associations": {
+        "*.s": "avr",
+        "tinygpsplus.h": "c"
+    },
+    "idf.adapterTargetName": "esp32",
+    "idf.flashType": "UART"
+}
