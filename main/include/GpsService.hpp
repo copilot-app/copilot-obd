@@ -1,5 +1,5 @@
 #pragma once
 
-#include "DataTypes.hpp"
+#include "Common.hpp"
 
 void parseGpsData(char* data, size_t size);

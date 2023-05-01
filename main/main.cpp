@@ -1,11 +1,11 @@
-#include "DataTypes.hpp"
+#include "Common.hpp"
 #include "GpsService.hpp"
 #include "UartUtils.hpp"
 
 #include <esp_log.h>
 
 UartConfiguration gpsUartConfiguration = {
-    .portNumber = kUartIdGps,
+    .portNumber = UartIdGps,
     .txPin = GPIO_NUM_17,
     .rxPin = GPIO_NUM_16,
     .configuration = {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DataTypes.hpp"
+#include "Common.hpp"
 
 void configureUartPort(UartConfiguration configuration);
 void startUartRxTransmission(RxTaskParameters *parameters);

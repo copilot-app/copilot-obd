@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <string>
+
 #include <driver/gpio.h>
 #include <driver/uart.h>
 
@@ -8,11 +11,8 @@ const unsigned rxBufferSize = 1024;
 typedef unsigned PinId;
 
 typedef enum {
-    kUartIdGps = UART_NUM_1,
-    // sentinel
-    kUartIdLast
+    UartIdGps = UART_NUM_1,
 } UartId;
-typedef void (*RxCallback)(char* data, size_t size);
 
 struct UartConfiguration {
     UartId portNumber;
@@ -21,7 +21,10 @@ struct UartConfiguration {
     uart_config_t configuration;
 };
 
+typedef void (*RxCallback)(char* data, size_t size);
 struct RxTaskParameters {
     UartId portNumber;
     RxCallback callback;
 };
+
+extern std::map<UartId, std::string> UartIdToString;
