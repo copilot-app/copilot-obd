@@ -3,10 +3,15 @@
 #include <driver/gpio.h>
 #include <driver/uart.h>
 
-const int rxBufferSize = 1024;
+const unsigned rxBufferSize = 1024;
 
-typedef int PinId;
-typedef int UartId;
+typedef unsigned PinId;
+
+typedef enum {
+    kUartIdGps = UART_NUM_1,
+    // sentinel
+    kUartIdLast
+} UartId;
 typedef void (*RxCallback)(char* data, size_t size);
 
 struct UartConfiguration {

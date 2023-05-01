@@ -2,8 +2,10 @@
 #include "GpsService.hpp"
 #include "UartUtils.hpp"
 
+#include <esp_log.h>
+
 UartConfiguration gpsUartConfiguration = {
-    .portNumber = UART_NUM_1,
+    .portNumber = kUartIdGps,
     .txPin = GPIO_NUM_17,
     .rxPin = GPIO_NUM_16,
     .configuration = {
@@ -18,6 +20,7 @@ UartConfiguration gpsUartConfiguration = {
 };
 
 extern "C" void app_main(void) {
+    esp_log_level_set("*", ESP_LOG_DEBUG);
     configureUartPort(gpsUartConfiguration);
     startUartRxTransmission(new RxTaskParameters{ gpsUartConfiguration.portNumber, parseGpsData });
 }
