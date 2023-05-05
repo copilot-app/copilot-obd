@@ -18,15 +18,25 @@ jobs:
         path: ${{ github.workspace }}/esp-idf
         key: ${{ runner.os }}-${{ env.cache-name }}
 
-    - if: ${{ steps.cache-esp-idf.outputs.cache-hit != 'true' }}
-      name: Clone ESP-IDF
+    - name: Clone ESP-IDF
+      if: ${{ steps.cache-esp-idf.outputs.cache-hit != 'true' }}
       uses: actions/checkout@v2
       with:
         path: ${{ github.workspace }}/esp-idf
         repository: espressif/esp-idf
         submodules: recursive
 
+    - name: Cache ESP-IDF tools
+      id: cache-esp-idf-tools
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-esp-idf-tools
+      with:
+        path: ~/.espressif
+        key: ${{ runner.os }}-${{ env.cache-name }}
+      
     - name: Install ESP-IDF
+      if: ${{ steps.cache-esp-idf-tools.outputs.cache-hit != 'true' }}
       shell: powershell
       run: |
         cd ${{ github.workspace }}/esp-idf
@@ -41,8 +51,8 @@ jobs:
         path: ${{ github.workspace }}/copilot-obd
         key: ${{ runner.os }}-${{ env.cache-name }}
 
-    - if: ${{ steps.cache-copilot-obd.outputs.cache-hit != 'true' }}
-      name: Clone copilot-obd
+    - name: Clone copilot-obd
+      if: ${{ steps.cache-copilot-obd.outputs.cache-hit != 'true' }}
       uses: actions/checkout@v2
       with:
         path: ${{ github.workspace }}/copilot-obd
