@@ -14,7 +14,7 @@ jobs:
       with:
         path: ${{ github.workspace }}/esp-idf
         repository: espressif/esp-idf
-        submodules: true
+        submodules: recursive
 
     - name: Install ESP-IDF
       shell: powershell
@@ -26,7 +26,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         path: ${{ github.workspace }}/copilot-obd
-        submodules: true
+        submodules: recursive
 
     - name: Build project
       shell: powershell
