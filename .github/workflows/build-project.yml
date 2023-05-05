@@ -21,7 +21,6 @@ jobs:
       run: |
         cd ${{ github.workspace }}/esp-idf
         ./install.ps1
-        ./export.ps1
 
     - name: Checkout copilot-obd source code
       uses: actions/checkout@v2
@@ -33,5 +32,6 @@ jobs:
       shell: powershell
       run: |
         cd ${{ github.workspace }}/copilot-obd
+        ${{ github.workspace }}/esp-idf/export.ps1
         idf.py build
     
