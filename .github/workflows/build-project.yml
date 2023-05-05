@@ -9,22 +9,29 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Set up ESP-IDF
+    - name: Checkout ESP-IDF
+      uses: actions/checkout@v2
+      with:
+        path: ${{ github.workspace }}/esp-idf
+        repository: espressif/esp-idf
+        submodules: true
+
+    - name: Install ESP-IDF
       shell: powershell
       run: |
-        git clone --recursive https://github.com/espressif/esp-idf.git
-        cd esp-idf
+        cd ${{ github.workspace }}/esp-idf
         ./install.ps1
         ./export.ps1
 
     - name: Checkout copilot-obd source code
       uses: actions/checkout@v2
       with:
+        path: ${{ github.workspace }}/copilot-obd
         submodules: true
 
     - name: Build project
       shell: powershell
       run: |
-        cd copilot-obd
+        cd ${{ github.workspace }}/copilot-obd
         idf.py build
     
