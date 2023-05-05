@@ -16,11 +16,7 @@ jobs:
         cache-name: cache-esp-idf
       with:
         path: ${{ github.workspace }}/esp-idf
-        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ env.cache-name }}-
-          ${{ runner.os }}-
-          ${{ env.cache-name }}-
+        key: ${{ runner.os }}-${{ env.cache-name }}
 
     - if: ${{ steps.cache-esp-idf.outputs.cache-hit != 'true' }}
       name: Clone ESP-IDF
@@ -36,7 +32,17 @@ jobs:
         cd ${{ github.workspace }}/esp-idf
         ./install.ps1
 
-    - name: Clone copilot-obd
+    - name: Cache copilot-obd
+      id: cache-copilot-obd
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-copilot-obd
+      with:
+        path: ${{ github.workspace }}/copilot-obd
+        key: ${{ runner.os }}-${{ env.cache-name }}
+
+    - if: ${{ steps.cache-copilot-obd.outputs.cache-hit != 'true' }}
+      name: Clone copilot-obd
       uses: actions/checkout@v2
       with:
         path: ${{ github.workspace }}/copilot-obd
