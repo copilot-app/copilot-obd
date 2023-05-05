@@ -1,0 +1,51 @@
+name: Build project
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Cache ESP-IDF
+      id: cache-esp-idf
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-esp-idf
+      with:
+        path: ${{ github.workspace }}/esp-idf
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.cache-name }}-
+          ${{ runner.os }}-
+          ${{ env.cache-name }}-
+
+    - if: ${{ steps.cache-esp-idf.outputs.cache-hit != 'true' }}
+      name: Clone ESP-IDF
+      uses: actions/checkout@v2
+      with:
+        path: ${{ github.workspace }}/esp-idf
+        repository: espressif/esp-idf
+        submodules: recursive
+
+    - name: Install ESP-IDF
+      shell: powershell
+      run: |
+        cd ${{ github.workspace }}/esp-idf
+        ./install.ps1
+
+    - name: Clone copilot-obd
+      uses: actions/checkout@v2
+      with:
+        path: ${{ github.workspace }}/copilot-obd
+        submodules: recursive
+
+    - name: Build project
+      shell: powershell
+      run: |
+        cd ${{ github.workspace }}/copilot-obd
+        ${{ github.workspace }}/esp-idf/export.ps1
+        idf.py build
+    
