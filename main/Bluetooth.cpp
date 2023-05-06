@@ -179,4 +179,10 @@ void init_bluetooth() {
         return;
     }
 
+    ret = esp_ble_gatts_app_register(PROFILE_A_APP_ID);
+    if (ret){
+        ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);
+        return;
+    }
+
 }
