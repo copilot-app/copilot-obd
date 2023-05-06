@@ -1,6 +1,7 @@
 #include "Common.hpp"
 #include "GpsService.hpp"
 #include "UartUtils.hpp"
+#include "Bluetooth.hpp"
 
 #include <esp_log.h>
 
