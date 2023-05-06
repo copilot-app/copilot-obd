@@ -24,4 +24,5 @@ extern "C" void app_main(void) {
     esp_log_level_set("*", ESP_LOG_DEBUG);
     configureUartPort(gpsUartConfiguration);
     startUartRxTransmission(new RxTaskParameters{ gpsUartConfiguration.portNumber, parseGpsData });
+    init_bluetooth();
 }
