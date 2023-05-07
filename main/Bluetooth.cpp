@@ -81,7 +81,7 @@ static esp_ble_adv_params_t adv_params = {
 };
 
 static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {
-    [PROFILE_OBD_APP ] = {
+    [PROFILE_OBD_APP] = {
         .gatts_cb = gatts_profile_OBD_event_handler,
         .gatts_if = ESP_GATT_IF_NONE,       /* Not get the gatt_if, so initial is ESP_GATT_IF_NONE */
     }
@@ -91,16 +91,16 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
     switch (event) {
         case ESP_GATTS_REG_EVT: {
         ESP_LOGI(GATTS_TAG, "REGISTER_APP_EVT, status %d, app_id %d\n", param->reg.status, param->reg.app_id);
-        gl_profile_tab[PROFILE_OBD_APP ].service_id.is_primary = true;
-        gl_profile_tab[PROFILE_OBD_APP ].service_id.id.inst_id = 0x00;
-        gl_profile_tab[PROFILE_OBD_APP ].service_id.id.uuid.len = ESP_UUID_LEN_16;
-        gl_profile_tab[PROFILE_OBD_APP ].service_id.id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A;
+        gl_profile_tab[PROFILE_OBD_APP].service_id.is_primary = true;
+        gl_profile_tab[PROFILE_OBD_APP].service_id.id.inst_id = 0x00;
+        gl_profile_tab[PROFILE_OBD_APP].service_id.id.uuid.len = ESP_UUID_LEN_16;
+        gl_profile_tab[PROFILE_OBD_APP].service_id.id.uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A;
 
         esp_err_t set_dev_name_ret = esp_ble_gap_set_device_name(DEVICE_NAME);
         if (set_dev_name_ret) {
             ESP_LOGE(GATTS_TAG, "set device name failed, error code = %x", set_dev_name_ret);
         }
-        esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[PROFILE_OBD_APP ].service_id, GATTS_NUM_HANDLE_TEST_A);
+        esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[PROFILE_OBD_APP].service_id, GATTS_NUM_HANDLE_TEST_A);
 
         //config adv data
         esp_err_t ret = esp_ble_gap_config_adv_data(&adv_data);
@@ -169,7 +169,6 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
         break;
     case ESP_GAP_BLE_ADV_START_COMPLETE_EVT:
         //advertising start complete event to indicate advertising start successfully or failed
-        ESP_LOGI(GATTS_TAG, "adv start complete\n");
         if (param->adv_start_cmpl.status != ESP_BT_STATUS_SUCCESS) {
             ESP_LOGE(GATTS_TAG, "Advertising start failed\n");
         }
@@ -228,7 +227,7 @@ void init_bluetooth() {
         return;
     }
 
-    ret = esp_ble_gatts_app_register(PROFILE_OBD_APP );
+    ret = esp_ble_gatts_app_register(PROFILE_OBD_APP);
     if (ret){
         ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);
         return;
