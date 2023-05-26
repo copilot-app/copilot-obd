@@ -130,7 +130,7 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
 
         break; 
     }
-        case ESP_GATTS_CREATE_EVT: {
+    case ESP_GATTS_CREATE_EVT: {
               ESP_LOGI(GATTS_TAG, "CREATE_SERVICE_EVT, status %d, service_handle %d\n", param->create.status, param->create.service_handle);
      gl_profile_tab[PROFILE_OBD_APP].service_handle = param->create.service_handle;
      gl_profile_tab[PROFILE_OBD_APP].char_uuid.len = ESP_UUID_LEN_16;
@@ -148,10 +148,45 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
     if (add_char_ret){
         ESP_LOGE(GATTS_TAG, "add char failed, error code =%x",add_char_ret);
     }
-    break;
+        break;
+    }
+    
+    case ESP_GATTS_ADD_CHAR_EVT: {
+        uint16_t length = 0;
+        const uint8_t *prf_char;
+
+        ESP_LOGI(GATTS_TAG, "ADD_CHAR_EVT, status %d,  attr_handle %d, service_handle %d\n",
+        param->add_char.status, param->add_char.attr_handle, param->add_char.service_handle);
+        gl_profile_tab[PROFILE_OBD_APP].char_handle = param->add_char.attr_handle;
+        gl_profile_tab[PROFILE_OBD_APP].descr_uuid.len = ESP_UUID_LEN_16;
+        gl_profile_tab[PROFILE_OBD_APP].descr_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;
+        esp_err_t get_attr_ret = esp_ble_gatts_get_attr_value(param->add_char.attr_handle,  &length, &prf_char);
+        if (get_attr_ret == ESP_FAIL){
+            ESP_LOGE(GATTS_TAG, "ILLEGAL HANDLE");
         }
-        default:
-            break;
+
+        ESP_LOGI(GATTS_TAG, "the gatts demo char length = %x\n", length);
+        for(int i = 0; i < length; i++){
+            ESP_LOGI(GATTS_TAG, "prf_char[%x] =%x\n",i,prf_char[i]);
+        }
+        esp_err_t add_descr_ret = esp_ble_gatts_add_char_descr(gl_profile_tab[PROFILE_OBD_APP].service_handle,
+                                                                &gl_profile_tab[PROFILE_OBD_APP].descr_uuid,
+                                                                ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,
+                                                                NULL,
+                                                                NULL);
+        if (add_descr_ret){
+            ESP_LOGE(GATTS_TAG, "add char descr failed, error code =%x", add_descr_ret);
+        }
+        break;
+    }
+    case ESP_GATTS_ADD_CHAR_DESCR_EVT:
+        gl_profile_tab[PROFILE_OBD_APP].descr_handle = param->add_char_descr.attr_handle;
+        ESP_LOGI(GATTS_TAG, "ADD_DESCR_EVT, status %d, attr_handle %d, service_handle %d\n",
+                    param->add_char_descr.status, param->add_char_descr.attr_handle, param->add_char_descr.service_handle);
+        break;
+
+    default:
+        break;
     }
 }
 
