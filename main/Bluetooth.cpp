@@ -10,6 +10,9 @@
 #define GATTS_SERVICE_UUID_TEST_A   0x00FF
 #define GATTS_NUM_HANDLE_TEST_A     4
 
+
+#define GATTS_DEMO_CHAR_VAL_LEN_MAX 0x40
+
 struct gatts_profile_inst {
     esp_gatts_cb_t gatts_cb;
     uint16_t gatts_if;
@@ -23,6 +26,17 @@ struct gatts_profile_inst {
     esp_gatt_char_prop_t property;
     uint16_t descr_handle;
     esp_bt_uuid_t descr_uuid;
+};
+
+
+static uint8_t dummy_data[] = {0x11,0x22,0x33};
+static esp_gatt_char_prop_t a_property = 0;
+
+static esp_attr_value_t gatts_demo_dummy_data =
+{
+    .attr_max_len = GATTS_DEMO_CHAR_VAL_LEN_MAX,
+    .attr_len     = sizeof(dummy_data),
+    .attr_value   = dummy_data,
 };
 
 static uint8_t adv_config_done = 0;
@@ -100,8 +114,6 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
         if (set_dev_name_ret) {
             ESP_LOGE(GATTS_TAG, "set device name failed, error code = %x", set_dev_name_ret);
         }
-        esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[PROFILE_OBD_APP].service_id, GATTS_NUM_HANDLE_TEST_A);
-
         //config adv data
         esp_err_t ret = esp_ble_gap_config_adv_data(&adv_data);
         if (ret){
@@ -114,9 +126,30 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
             ESP_LOGE(GATTS_TAG, "config scan response data failed, error code = %x", ret);
         }
         adv_config_done |= scan_rsp_config_flag;
+        esp_ble_gatts_create_service(gatts_if, &gl_profile_tab[PROFILE_OBD_APP].service_id, GATTS_NUM_HANDLE_TEST_A);
 
         break; 
     }
+        case ESP_GATTS_CREATE_EVT: {
+              ESP_LOGI(GATTS_TAG, "CREATE_SERVICE_EVT, status %d, service_handle %d\n", param->create.status, param->create.service_handle);
+     gl_profile_tab[PROFILE_OBD_APP].service_handle = param->create.service_handle;
+     gl_profile_tab[PROFILE_OBD_APP].char_uuid.len = ESP_UUID_LEN_16;
+     gl_profile_tab[PROFILE_OBD_APP].char_uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A;  
+
+     esp_ble_gatts_start_service(gl_profile_tab[PROFILE_OBD_APP].service_handle);
+     a_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
+     esp_err_t add_char_ret =  
+     esp_ble_gatts_add_char(gl_profile_tab[PROFILE_OBD_APP].service_handle,  
+                            &gl_profile_tab[PROFILE_OBD_APP].char_uuid,  
+                            ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,  
+                            a_property,  
+                            &gatts_demo_dummy_data,  
+                            NULL);
+    if (add_char_ret){
+        ESP_LOGE(GATTS_TAG, "add char failed, error code =%x",add_char_ret);
+    }
+    break;
+        }
         default:
             break;
     }
