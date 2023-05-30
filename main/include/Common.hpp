@@ -11,6 +11,7 @@ const unsigned rxBufferSize = 1024;
 typedef unsigned PinId;
 
 typedef enum {
+    UartIdLora = UART_NUM_1,
     UartIdGps = UART_NUM_1,
 } UartId;
 
