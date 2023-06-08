@@ -1,6 +1,8 @@
 #include "Bluetooth.hpp"
+
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "cstring"
 
 #define GATTS_TAG                   "OBD"
 #define DEVICE_NAME                 "Copilot Device"
@@ -131,23 +133,23 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
         break; 
     }
     case ESP_GATTS_CREATE_EVT: {
-              ESP_LOGI(GATTS_TAG, "CREATE_SERVICE_EVT, status %d, service_handle %d\n", param->create.status, param->create.service_handle);
-     gl_profile_tab[PROFILE_OBD_APP].service_handle = param->create.service_handle;
-     gl_profile_tab[PROFILE_OBD_APP].char_uuid.len = ESP_UUID_LEN_16;
-     gl_profile_tab[PROFILE_OBD_APP].char_uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A;  
+        ESP_LOGI(GATTS_TAG, "CREATE_SERVICE_EVT, status %d, service_handle %d\n", param->create.status, param->create.service_handle);
+        gl_profile_tab[PROFILE_OBD_APP].service_handle = param->create.service_handle;
+        gl_profile_tab[PROFILE_OBD_APP].char_uuid.len = ESP_UUID_LEN_16;
+        gl_profile_tab[PROFILE_OBD_APP].char_uuid.uuid.uuid16 = GATTS_SERVICE_UUID_TEST_A;  
 
-     esp_ble_gatts_start_service(gl_profile_tab[PROFILE_OBD_APP].service_handle);
-     a_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
-     esp_err_t add_char_ret =  
-     esp_ble_gatts_add_char(gl_profile_tab[PROFILE_OBD_APP].service_handle,  
-                            &gl_profile_tab[PROFILE_OBD_APP].char_uuid,  
-                            ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,  
-                            a_property,  
-                            &gatts_demo_dummy_data,  
-                            NULL);
-    if (add_char_ret){
-        ESP_LOGE(GATTS_TAG, "add char failed, error code =%x",add_char_ret);
-    }
+        esp_ble_gatts_start_service(gl_profile_tab[PROFILE_OBD_APP].service_handle);
+        a_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
+        esp_err_t add_char_ret =  
+        esp_ble_gatts_add_char(gl_profile_tab[PROFILE_OBD_APP].service_handle,  
+                                &gl_profile_tab[PROFILE_OBD_APP].char_uuid,  
+                                ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE,  
+                                a_property,  
+                                &gatts_demo_dummy_data,  
+                                NULL);
+        if (add_char_ret){
+            ESP_LOGE(GATTS_TAG, "add char failed, error code =%x",add_char_ret);
+        }
         break;
     }
     
@@ -184,7 +186,37 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
         ESP_LOGI(GATTS_TAG, "ADD_DESCR_EVT, status %d, attr_handle %d, service_handle %d\n",
                     param->add_char_descr.status, param->add_char_descr.attr_handle, param->add_char_descr.service_handle);
         break;
-
+    case ESP_GATTS_CONNECT_EVT: {
+        esp_ble_conn_update_params_t conn_params = {0};  
+        memcpy(conn_params.bda, param->connect.remote_bda, sizeof(esp_bd_addr_t));
+        /* For the IOS system, please reference the apple official documents about the ble connection parameters restrictions. */
+        conn_params.latency = 0;  
+        conn_params.max_int = 0x30;    // max_int = 0x30*1.25ms = 40ms  
+        conn_params.min_int = 0x10;    // min_int = 0x10*1.25ms = 20ms   
+        conn_params.timeout = 400;     // timeout = 400*10ms = 4000ms  
+        ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONNECT_EVT, conn_id %d, remote %02x:%02x:%02x:%02x:%02x:%02x",  
+                param->connect.conn_id,  
+                param->connect.remote_bda[0],  
+                param->connect.remote_bda[1],  
+                param->connect.remote_bda[2],  
+                param->connect.remote_bda[3],  
+                param->connect.remote_bda[4],  
+                param->connect.remote_bda[5]);  
+        gl_profile_tab[PROFILE_OBD_APP].conn_id = param->connect.conn_id;
+        //start sent the update connection parameters to the peer device.
+        esp_ble_gap_update_conn_params(&conn_params);
+	    break;
+    }
+    // case ESP_GATTS_
+    // case ESP_GAP_BLE_UPDATE_CONN_PARAMS_EVT:
+    //      ESP_LOGI(GATTS_TAG, "update connection params status = %d, min_int = %d, max_int = %d,conn_int = %d,latency = %d, timeout = %d",
+    //               param->update_conn_params.status,
+    //               param->update_conn_params.min_int,
+    //               param->update_conn_params.max_int,
+    //               param->update_conn_params.conn_int,
+    //               param->update_conn_params.latency,
+    //               param->update_conn_params.timeout);
+    //     break;
     default:
         break;
     }
@@ -300,5 +332,12 @@ void init_bluetooth() {
         ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);
         return;
     }
+
+    esp_err_t local_mtu_ret = esp_ble_gatt_set_local_mtu(500);
+    if (local_mtu_ret){
+        ESP_LOGE(GATTS_TAG, "set local  MTU failed, error code = %x", local_mtu_ret);
+    }
+
+    return;
 
 }
