@@ -6,8 +6,6 @@ idf_component_register(
                     "Bluetooth.cpp"
 
     INCLUDE_DIRS    "include"
-                    ${CMAKE_SOURCE_DIR}/components/TinyGPSPlus-ESPIDF/TinyGPSPlus/src/
-                    $ENV{IDF_PATH}/components/bt/host/bluedroid/api/include/api/
 
-    REQUIRES        bt driver nvs_flash
+    REQUIRES        bt driver nvs_flash TinyGPSPlus-ESPIDF
 )

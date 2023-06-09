@@ -4,5 +4,7 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
+file(TO_CMAKE_PATH "$ENV{IDF_PATH}" IDF_PATH)
+set(ENV{IDF_PATH} ${IDF_PATH})
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(copilot-obd)
