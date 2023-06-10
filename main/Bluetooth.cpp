@@ -4,14 +4,14 @@
 #include <nvs_flash.h>
 #include <cstring>
 
-#define GATTS_TAG                   "OBD"
+#define GATTS_TAG                   "OBD-Server"
+#define SPP_TAG                     "OBD-Client"
 #define DEVICE_NAME                 "Copilot Device"
 
 #define PROFILE_NUM                 2
 #define PROFILE_OBD_APP             0
 #define GATTS_SERVICE_UUID_TEST_A   0x00FF
 #define GATTS_NUM_HANDLE_TEST_A     4
-
 
 #define GATTS_DEMO_CHAR_VAL_LEN_MAX 0x40
 
@@ -29,7 +29,6 @@ struct gatts_profile_inst {
     uint16_t descr_handle;
     esp_bt_uuid_t descr_uuid;
 };
-
 
 static uint8_t dummy_data[] = { 0x11,0x22,0x33 };
 static esp_gatt_char_prop_t a_property = 0;
@@ -102,6 +101,11 @@ static struct gatts_profile_inst gl_profile_tab[PROFILE_NUM] = {
         .gatts_if = ESP_GATT_IF_NONE,       /* Not get the gatt_if, so initial is ESP_GATT_IF_NONE */
     }
 };
+
+esp_bd_addr_t peer_bd_addr = {0};
+static uint8_t peer_bdname_len;
+static char peer_bdname[ESP_BT_GAP_MAX_BDNAME_LEN + 1];
+static const char remote_device_name[] = "OBDII"; // to fill in
 
 static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t* param) {
     switch (event) {
@@ -289,6 +293,118 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     }
 }
 
+static bool get_name_from_eir(uint8_t *eir, char *bdname, uint8_t *bdname_len)
+{
+    uint8_t *rmt_bdname = NULL;
+    uint8_t rmt_bdname_len = 0;
+
+    if (!eir) {
+        return false;
+    }
+
+    rmt_bdname = esp_bt_gap_resolve_eir_data(eir, ESP_BT_EIR_TYPE_CMPL_LOCAL_NAME, &rmt_bdname_len);
+    if (!rmt_bdname) {
+        rmt_bdname = esp_bt_gap_resolve_eir_data(eir, ESP_BT_EIR_TYPE_SHORT_LOCAL_NAME, &rmt_bdname_len);
+    }
+
+    if (rmt_bdname) {
+        if (rmt_bdname_len > ESP_BT_GAP_MAX_BDNAME_LEN) {
+            rmt_bdname_len = ESP_BT_GAP_MAX_BDNAME_LEN;
+        }
+
+        if (bdname) {
+            memcpy(bdname, rmt_bdname, rmt_bdname_len);
+            bdname[rmt_bdname_len] = '\0';
+        }
+        if (bdname_len) {
+            *bdname_len = rmt_bdname_len;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+static void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param) {
+    switch(event) {
+        case ESP_BT_GAP_DISC_RES_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_DISC_RES_EVT");
+            esp_log_buffer_hex(SPP_TAG, param->disc_res.bda, ESP_BD_ADDR_LEN);
+            /* Find the target peer device name in the EIR data */
+            for (int i = 0; i < param->disc_res.num_prop; i++){
+                if (param->disc_res.prop[i].type == ESP_BT_GAP_DEV_PROP_EIR
+                    && get_name_from_eir((uint8_t*)param->disc_res.prop[i].val, peer_bdname, &peer_bdname_len)){ // fixed
+                    esp_log_buffer_char(SPP_TAG, peer_bdname, peer_bdname_len);
+                    if (strlen(remote_device_name) == peer_bdname_len
+                        && strncmp(peer_bdname, remote_device_name, peer_bdname_len) == 0) {
+                        memcpy(peer_bd_addr, param->disc_res.bda, ESP_BD_ADDR_LEN);
+                        /* Have found the target peer device, cancel the previous GAP discover procedure. And go on
+                        * dsicovering the SPP service on the peer device */
+                        esp_bt_gap_cancel_discovery();
+                        // esp_spp_start_discovery(peer_bd_addr); // need fix
+                    }
+                }
+            }
+            break;
+        case ESP_BT_GAP_DISC_STATE_CHANGED_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_DISC_STATE_CHANGED_EVT");
+            break;
+        case ESP_BT_GAP_RMT_SRVCS_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_RMT_SRVCS_EVT");
+            break;
+        case ESP_BT_GAP_RMT_SRVC_REC_EVT:
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_RMT_SRVC_REC_EVT");
+            break;
+        case ESP_BT_GAP_AUTH_CMPL_EVT:{
+            if (param->auth_cmpl.stat == ESP_BT_STATUS_SUCCESS) {
+                ESP_LOGI(SPP_TAG, "authentication success: %s", param->auth_cmpl.device_name);
+                esp_log_buffer_hex(SPP_TAG, param->auth_cmpl.bda, ESP_BD_ADDR_LEN);
+            } else {
+                ESP_LOGE(SPP_TAG, "authentication failed, status:%d", param->auth_cmpl.stat);
+            }
+            break;
+        }
+        case ESP_BT_GAP_PIN_REQ_EVT:{
+            ESP_LOGI(SPP_TAG, "ESP_BT_GAP_PIN_REQ_EVT min_16_digit:%d", param->pin_req.min_16_digit);
+            if (param->pin_req.min_16_digit) {
+                ESP_LOGI(SPP_TAG, "Input pin code: 0000 0000 0000 0000");
+                esp_bt_pin_code_t pin_code = {0};
+                esp_bt_gap_pin_reply(param->pin_req.bda, true, 16, pin_code);
+            } else {
+                ESP_LOGI(SPP_TAG, "Input pin code: 1234");
+                esp_bt_pin_code_t pin_code;
+                pin_code[0] = '1';
+                pin_code[1] = '2';
+                pin_code[2] = '3';
+                pin_code[3] = '4';
+                esp_bt_gap_pin_reply(param->pin_req.bda, true, 4, pin_code);
+            }
+            break;
+        }
+
+#if (CONFIG_BT_SSP_ENABLED == true)
+    case ESP_BT_GAP_CFM_REQ_EVT:
+        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_CFM_REQ_EVT Please compare the numeric value: %"PRIu32, param->cfm_req.num_val);
+        ESP_LOGW(SPP_TAG, "To confirm the value, type `spp ok;`");
+        break;
+    case ESP_BT_GAP_KEY_NOTIF_EVT:
+        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_KEY_NOTIF_EVT passkey:%"PRIu32, param->key_notif.passkey);
+        ESP_LOGW(SPP_TAG, "Waiting responce...");
+        break;
+    case ESP_BT_GAP_KEY_REQ_EVT:
+        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_KEY_REQ_EVT Please enter passkey!");
+        ESP_LOGW(SPP_TAG, "To input the key, type `spp key xxxxxx;`");
+        break;
+#endif
+
+    case ESP_BT_GAP_MODE_CHG_EVT:
+        ESP_LOGI(SPP_TAG, "ESP_BT_GAP_MODE_CHG_EVT mode:%d", param->mode_chg.mode);
+        break;
+
+        default:
+            break;
+        }
+}
 
 void init_bluetooth() {
     esp_err_t ret;
@@ -341,6 +457,12 @@ void init_bluetooth() {
     ret = esp_ble_gatts_app_register(PROFILE_OBD_APP);
     if (ret) {
         ESP_LOGE(GATTS_TAG, "gatts app register error, error code = %x", ret);
+        return;
+    }
+
+    ret = esp_bt_gap_register_callback(esp_bt_gap_cb);
+    if (ret) {
+        ESP_LOGE(SPP_TAG, "%s gap register failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }
 
