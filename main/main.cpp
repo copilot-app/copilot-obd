@@ -3,6 +3,7 @@
 #include "UartUtils.hpp"
 #include "Bluetooth.hpp"
 
+#include <string>
 #include <esp_log.h>
 
 UartConfiguration gpsUartConfiguration = {
@@ -21,8 +22,9 @@ UartConfiguration gpsUartConfiguration = {
 };
 
 extern "C" void app_main(void) {
+    char location[20];
     esp_log_level_set("*", ESP_LOG_DEBUG);
     configureUartPort(gpsUartConfiguration);
-    startUartRxTransmission(new RxTaskParameters{ gpsUartConfiguration.portNumber, parseGpsData });
-    init_bluetooth();
+    startUartRxTransmission(new RxTaskParameters{ gpsUartConfiguration.portNumber, parseGpsData, location });
+    init_bluetooth(location);
 }

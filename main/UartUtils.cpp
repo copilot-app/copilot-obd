@@ -6,7 +6,7 @@
 #include <esp_log.h>
 
 static void rxTask(void* parameters) {
-    auto [portNumber, callback] = *(RxTaskParameters*)parameters;
+    auto [portNumber, callback, location] = *(RxTaskParameters*)parameters;
     char* dataBuffer = new char[rxBufferSize + 1];
     ESP_LOGI(__func__, "[%s] Task created for port %d", UartIdToString[portNumber].c_str(), portNumber);
 
@@ -15,8 +15,9 @@ static void rxTask(void* parameters) {
         if (dataSize > 0) {
             dataBuffer[dataSize] = 0;
             ESP_LOGD(__func__, "Read %d bytes: '%s'", dataSize, dataBuffer);
-            callback(dataBuffer, dataSize);
+            callback(dataBuffer, dataSize, location);
         }
+        ESP_LOGD(__func__, "Data size 0.");
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
@@ -41,7 +42,7 @@ void startUartRxTransmission(RxTaskParameters* parameters) {
     ESP_LOGI(__func__, "[%s] On port number %d", UartIdToString[portNumber].c_str(), portNumber);
 
     std::string taskName = std::string("uart_rx_task_") + std::to_string(portNumber);
-    xTaskCreate(rxTask, taskName.c_str(), 1024 * 2, (void*)parameters, configMAX_PRIORITIES, NULL);
+    xTaskCreate(rxTask, taskName.c_str(), 1024 * 3, (void*)parameters, configMAX_PRIORITIES, NULL);
 
     ESP_LOGI(__func__, "[%s] Transmission on port number %d started", UartIdToString[portNumber].c_str(), portNumber);
 }

@@ -21,10 +21,11 @@ struct UartConfiguration {
     uart_config_t configuration;
 };
 
-typedef void (*RxCallback)(char* data, size_t size);
+typedef void (*RxCallback)(char* data, size_t size, char* location);
 struct RxTaskParameters {
     UartId portNumber;
     RxCallback callback;
+    char* location;
 };
 
 extern std::map<UartId, std::string> UartIdToString;

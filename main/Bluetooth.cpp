@@ -2,7 +2,6 @@
 
 #include <esp_log.h>
 #include <nvs_flash.h>
-#include <cstring>
 
 #define GATTS_TAG                   "OBD"
 #define DEVICE_NAME                 "Copilot Device"
@@ -14,6 +13,8 @@
 
 
 #define GATTS_DEMO_CHAR_VAL_LEN_MAX 0x40
+
+char* location = nullptr;
 
 struct gatts_profile_inst {
     esp_gatts_cb_t gatts_cb;
@@ -29,7 +30,6 @@ struct gatts_profile_inst {
     uint16_t descr_handle;
     esp_bt_uuid_t descr_uuid;
 };
-
 
 static uint8_t dummy_data[] = { 0x11,0x22,0x33 };
 static esp_gatt_char_prop_t a_property = 0;
@@ -222,12 +222,11 @@ static void gatts_profile_OBD_event_handler(esp_gatts_cb_event_t event, esp_gatt
         esp_gatt_rsp_t rsp;
         memset(&rsp, 0, sizeof(esp_gatt_rsp_t));
         rsp.attr_value.handle = param->read.handle;
-        rsp.attr_value.len = 3;
-        rsp.attr_value.value[0] = 'O';
-        rsp.attr_value.value[1] = 'B';
-        rsp.attr_value.value[2] = 'D';
-        esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id,
-            ESP_GATT_OK, &rsp);
+        rsp.attr_value.len = 20;
+        for (int i = 0; i < 20; i++) {
+            rsp.attr_value.value[i] = location[i];
+        }
+        esp_ble_gatts_send_response(gatts_if, param->read.conn_id, param->read.trans_id, ESP_GATT_OK, &rsp);
         break;
     }
     default:
@@ -289,9 +288,9 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     }
 }
 
-
-void init_bluetooth() {
+void init_bluetooth(char* data) {
     esp_err_t ret;
+    location = data;
 
     // Initialize NVS
     ret = nvs_flash_init();

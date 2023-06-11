@@ -2,4 +2,6 @@
 
 #include "Common.hpp"
 
-void parseGpsData(char* data, size_t size);
+#include <string>
+
+void parseGpsData(char* data, size_t size, char* location);
