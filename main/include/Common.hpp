@@ -6,7 +6,7 @@
 #include <driver/gpio.h>
 #include <driver/uart.h>
 
-const unsigned rxBufferSize = 1024;
+const unsigned rxBufferSize = 512;
 
 typedef unsigned PinId;
 
