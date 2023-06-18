@@ -11,8 +11,9 @@ const unsigned rxBufferSize = 1024;
 typedef unsigned PinId;
 
 typedef enum {
-    UartIdLora = UART_NUM_1,
     UartIdGps = UART_NUM_1,
+    UartIdLora = UART_NUM_1,
+    UartIdLora2 = UART_NUM_2,
 } UartId;
 
 struct UartConfiguration {

@@ -21,6 +21,21 @@ UartConfiguration gpsUartConfiguration = {
 
 UartConfiguration loraUartConfiguration = {
     .portNumber = UartIdLora,
+    .txPin = GPIO_NUM_10,
+    .rxPin = GPIO_NUM_9,
+    .configuration = {
+        .baud_rate = 9600,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .rx_flow_ctrl_thresh = 122,
+        .source_clk = UART_SCLK_APB,
+    }
+};
+
+UartConfiguration lora2UartConfiguration = {
+    .portNumber = UartIdLora2,
     .txPin = GPIO_NUM_17,
     .rxPin = GPIO_NUM_16,
     .configuration = {
@@ -41,4 +56,5 @@ extern "C" void app_main(void) {
     // startUartRxTransmission(new RxTaskParameters{ gpsUartConfiguration.portNumber, parseGpsData });
 
     configureUartPort(loraUartConfiguration);
+    configureUartPort(lora2UartConfiguration);
 }

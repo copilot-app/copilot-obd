@@ -1,6 +1,7 @@
 #include "Common.hpp"
 
 std::map<UartId, std::string> UartIdToString = {
-    { UartIdLora, "LoRa" },
     { UartIdGps, "GPS" },
+    { UartIdLora, "LoRa" },
+    { UartIdLora2, "LoRa2" },
 };

@@ -29,9 +29,9 @@ void configureUartPort(UartConfiguration configuration) {
     auto [portNumber, txPin, rxPin, uartConfig] = configuration;
     ESP_LOGI(__func__, "[%s] Port number %d", UartIdToString[portNumber].c_str(), portNumber);
 
-    uart_driver_install(portNumber, rxBufferSize * 2, 0, 0, NULL, 0);
-    uart_param_config(portNumber, &uartConfig);
-    uart_set_pin(portNumber, txPin, rxPin, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+    ESP_ERROR_CHECK(uart_param_config(portNumber, &uartConfig));
+    ESP_ERROR_CHECK(uart_set_pin(portNumber, txPin, rxPin, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_driver_install(portNumber, rxBufferSize * 2, 0, 0, NULL, 0));
 
     ESP_LOGI(__func__, "[%s] Port number %d configured", UartIdToString[portNumber].c_str(), portNumber);
 }
